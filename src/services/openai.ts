@@ -11,15 +11,39 @@ export const openaiService = {
   // Transcribe audio using Whisper
   transcribeAudio: async (audioBlob: Blob): Promise<string> => {
     try {
-      const file = new File([audioBlob], 'audio.wav', { type: 'audio/wav' });
-      
-      const response = await openai.audio.transcriptions.create({
-        file: file,
-        model: 'whisper-1',
-        language: 'en'
+      // Create a more descriptive filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const file = new File([audioBlob], `audio-${timestamp}.${audioBlob.type.split('/')[1]}`, { 
+        type: audioBlob.type 
       });
+      
+      // Add retry logic for better reliability
+      let retries = 3;
+      let lastError: Error | null = null;
+      
+      while (retries > 0) {
+        try {
+          const response = await openai.audio.transcriptions.create({
+            file: file,
+            model: 'whisper-1',
+            language: 'en',
+            response_format: 'text',
+            temperature: 0.2, // Lower temperature for more accurate transcription
+            prompt: 'This is a care worker speaking about patient care notes.'
+          });
 
-      return response.text;
+          return response;
+        } catch (error) {
+          lastError = error as Error;
+          retries--;
+          if (retries > 0) {
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      }
+
+      throw lastError || new Error('Failed to transcribe after multiple attempts');
     } catch (error) {
       console.error('Error transcribing audio:', error);
       throw new Error('Failed to transcribe audio. Please check your API key and try again.');

@@ -18,8 +18,29 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      // Enhanced audio constraints for better quality
+      const constraints = {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1,
+          sampleRate: 44100,
+          sampleSize: 16
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Use higher quality audio format for mobile
+      const options = {
+        mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+          ? 'audio/webm;codecs=opus'
+          : 'audio/mp4',
+        audioBitsPerSecond: 128000
+      };
+
+      const mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -30,14 +51,24 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        await transcribeAudio(audioBlob);
+        // Convert to WAV format for better compatibility
+        const audioBlob = new Blob(audioChunksRef.current, { 
+          type: mediaRecorder.mimeType 
+        });
+        
+        try {
+          await transcribeAudio(audioBlob);
+        } catch (error) {
+          console.error('Transcription error:', error);
+          alert('Failed to transcribe audio. Please try speaking more clearly or check your connection.');
+        }
         
         // Clean up the stream
         stream.getTracks().forEach(track => track.stop());
       };
 
-      mediaRecorder.start();
+      // Request data more frequently on mobile
+      mediaRecorder.start(1000);
       setIsRecording(true);
       setRecordingTime(0);
       
@@ -47,7 +78,11 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
       }, 1000);
     } catch (error) {
       console.error('Error starting recording:', error);
-      alert('Failed to start recording. Please check microphone permissions.');
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        alert('Microphone access denied. Please enable microphone permissions in your browser settings.');
+      } else {
+        alert('Failed to start recording. Please check your microphone and try again.');
+      }
     }
   };
 
