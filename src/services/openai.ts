@@ -13,7 +13,7 @@ export const openaiService = {
     try {
       // Create a more descriptive filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const file = new File([audioBlob], `audio-${timestamp}.${audioBlob.type.split('/')[1]}`, { 
+      const file = new File([audioBlob], `audio-${timestamp}.webm`, { 
         type: audioBlob.type 
       });
       
@@ -23,21 +23,20 @@ export const openaiService = {
       
       while (retries > 0) {
         try {
+          console.log('Attempting transcription, attempt', 4 - retries);
           const response = await openai.audio.transcriptions.create({
-            file: file,
+            file,
             model: 'whisper-1',
-            language: 'en',
-            response_format: 'text',
-            temperature: 0.2, // Lower temperature for more accurate transcription
-            prompt: 'This is a care worker speaking about patient care notes.'
+            language: 'en'
           });
 
-          return response;
+          console.log('Transcription successful:', response);
+          return typeof response === 'string' ? response : response.text;
         } catch (error) {
+          console.error('Transcription attempt failed:', error);
           lastError = error as Error;
           retries--;
           if (retries > 0) {
-            // Wait before retrying
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
         }
@@ -46,7 +45,7 @@ export const openaiService = {
       throw lastError || new Error('Failed to transcribe after multiple attempts');
     } catch (error) {
       console.error('Error transcribing audio:', error);
-      throw new Error('Failed to transcribe audio. Please check your API key and try again.');
+      throw error;
     }
   },
 

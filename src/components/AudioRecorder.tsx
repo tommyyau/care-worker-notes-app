@@ -120,10 +120,14 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
     try {
       const { openaiService } = await import('../services/openai');
       const transcript = await openaiService.transcribeAudio(audioBlob);
+      if (!transcript) {
+        throw new Error('No transcription received');
+      }
       onTranscriptionComplete(transcript);
     } catch (error) {
       console.error('Transcription error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to transcribe audio');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to transcribe audio';
+      alert(`Transcription failed: ${errorMessage}. Please try again.`);
     } finally {
       setIsTranscribing(false);
     }
