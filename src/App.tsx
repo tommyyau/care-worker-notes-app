@@ -5,6 +5,7 @@ import { isApiKeyConfigured } from './services/openai'
 import AudioRecorder from './components/AudioRecorder.js'
 import ApiKeyWarning from './components/ApiKeyWarning.js'
 import NotesHistory from './components/NotesHistory.js'
+import logo from './assets/logo.svg'
 
 function App() {
   const [rawContent, setRawContent] = useState('')
@@ -91,8 +92,8 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
-                src="http://www.timeforyoucare.co.uk/img/logo.svg" 
-                alt="Time for You Care" 
+                src={logo} 
+                alt="Care Worker Notes" 
                 className="h-10 w-auto"
               />
               <div>

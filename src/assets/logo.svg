@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heart shape -->
+  <path d="M25 10 C25 10, 10 10, 10 20 C10 30, 25 40, 25 40 C25 40, 40 30, 40 20 C40 10, 25 10, 25 10" fill="#4F46E5"/>
+  <!-- Text -->
+  <text x="55" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1F2937">
+    Care Worker Notes
+  </text>
+</svg> 
