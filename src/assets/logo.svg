@@ -5,8 +5,4 @@
     d="M25 42.5C25 42.5 7.5 31.25 7.5 18.75C7.5 12.5 12.5 7.5 18.75 7.5C21.875 7.5 23.75 8.75 25 10C26.25 8.75 28.125 7.5 31.25 7.5C37.5 7.5 42.5 12.5 42.5 18.75C42.5 31.25 25 42.5 25 42.5Z"
     fill="#EF4444"
   />
-  <!-- Text -->
-  <text x="55" y="30" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">
-    Care Worker Notes
-  </text>
 </svg> 
