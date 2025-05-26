@@ -54,4 +54,10 @@ export interface EnhancementState {
   isEnhancing: boolean;
   enhancedNote?: EnhancedNote;
   error?: string;
+}
+
+export interface TranscriptionResult {
+  text: string;
+  detectedLanguage: string;
+  translation?: string;
 } 

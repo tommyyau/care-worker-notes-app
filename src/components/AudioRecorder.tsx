@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import type { TranscriptionResult } from '../types';
 
 interface AudioRecorderProps {
   onTranscriptionComplete: (transcript: string) => void;

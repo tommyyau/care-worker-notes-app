@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import type { EnhancedNote, VisitType } from '../types';
+import type { EnhancedNote, VisitType, TranscriptionResult } from '../types';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -8,7 +8,7 @@ const openai = new OpenAI({
 });
 
 export const openaiService = {
-  // Transcribe audio using Whisper
+  // Transcribe audio using Whisper with automatic translation to English
   transcribeAudio: async (audioBlob: Blob): Promise<string> => {
     try {
       // Create a more descriptive filename with timestamp
@@ -24,10 +24,10 @@ export const openaiService = {
       while (retries > 0) {
         try {
           console.log('Attempting transcription, attempt', 4 - retries);
-          const response = await openai.audio.transcriptions.create({
+          // Always translate to English
+          const response = await openai.audio.translations.create({
             file,
-            model: 'whisper-1',
-            language: 'en'
+            model: 'whisper-1'
           });
 
           console.log('Transcription successful:', response);
