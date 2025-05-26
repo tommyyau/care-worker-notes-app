@@ -5,7 +5,7 @@ import { isApiKeyConfigured } from './services/openai'
 import AudioRecorder from './components/AudioRecorder.js'
 import ApiKeyWarning from './components/ApiKeyWarning.js'
 import NotesHistory from './components/NotesHistory.js'
-import logo from './assets/logo.svg'
+import logo from './assets/logo.svg?url'
 
 function App() {
   const [rawContent, setRawContent] = useState('')
