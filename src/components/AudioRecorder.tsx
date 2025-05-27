@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import type { TranscriptionResult } from '../types';
 
 interface AudioRecorderProps {
   onTranscriptionComplete: (transcript: string) => void;
@@ -33,11 +32,40 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       
-      // Use higher quality audio format for mobile
+      // Try formats in order of preference for iOS Safari compatibility
+      let mimeType;
+      if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+        mimeType = 'audio/wav';
+      } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mimeType = 'audio/webm;codecs=opus';
+      } else {
+        // If none of the preferred formats are supported, try basic formats
+        const supportedMimeTypes = [
+          'audio/webm',
+          'audio/ogg',
+          'audio/mpeg',
+          'audio/m4a',
+          'audio/mp3'
+        ];
+        
+        for (const type of supportedMimeTypes) {
+          if (MediaRecorder.isTypeSupported(type)) {
+            mimeType = type;
+            break;
+          }
+        }
+        
+        if (!mimeType) {
+          throw new Error('No supported audio format found on this browser');
+        }
+      }
+
+      console.log('Using audio format:', mimeType); // Debug log
+      
       const options = {
-        mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
-          ? 'audio/webm;codecs=opus'
-          : 'audio/mp4',
+        mimeType,
         audioBitsPerSecond: 128000
       };
 
