@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import type { EnhancedNote, VisitType, TranscriptionResult } from '../types';
+import type { EnhancedNote, VisitType } from '../types';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
