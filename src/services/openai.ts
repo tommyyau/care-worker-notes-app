@@ -13,7 +13,26 @@ export const openaiService = {
     try {
       // Create a more descriptive filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const file = new File([audioBlob], `audio-${timestamp}.webm`, { 
+      
+      // Determine the correct file extension based on the MIME type
+      let extension = 'wav'; // Default fallback
+      if (audioBlob.type.includes('mp4')) {
+        extension = 'mp4';
+      } else if (audioBlob.type.includes('webm')) {
+        extension = 'webm';
+      } else if (audioBlob.type.includes('wav')) {
+        extension = 'wav';
+      } else if (audioBlob.type.includes('ogg')) {
+        extension = 'ogg';
+      } else if (audioBlob.type.includes('m4a')) {
+        extension = 'm4a';
+      } else if (audioBlob.type.includes('mp3')) {
+        extension = 'mp3';
+      }
+      
+      console.log('Audio blob type:', audioBlob.type, 'Extension:', extension, 'Size:', audioBlob.size);
+      
+      const file = new File([audioBlob], `audio-${timestamp}.${extension}`, { 
         type: audioBlob.type 
       });
       
@@ -23,7 +42,7 @@ export const openaiService = {
       
       while (retries > 0) {
         try {
-          console.log('Attempting transcription, attempt', 4 - retries);
+          console.log('Attempting transcription, attempt', 4 - retries, 'File:', file.name, 'Type:', file.type);
           // Always translate to English
           const response = await openai.audio.translations.create({
             file,

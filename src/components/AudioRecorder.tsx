@@ -85,6 +85,26 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
           type: mediaRecorder.mimeType 
         });
         
+        console.log('Audio recording stopped. Blob details:', {
+          size: audioBlob.size,
+          type: audioBlob.type,
+          mimeType: mediaRecorder.mimeType,
+          chunks: audioChunksRef.current.length
+        });
+        
+        // Validate audio blob before transcription
+        if (audioBlob.size === 0) {
+          console.error('Audio blob is empty');
+          alert('Recording failed - no audio data captured. Please try again.');
+          return;
+        }
+        
+        if (audioBlob.size < 1000) { // Less than 1KB is likely too small
+          console.warn('Audio blob is very small:', audioBlob.size, 'bytes');
+          alert('Recording seems too short. Please try speaking for a longer duration.');
+          return;
+        }
+        
         try {
           await transcribeAudio(audioBlob);
         } catch (error) {
