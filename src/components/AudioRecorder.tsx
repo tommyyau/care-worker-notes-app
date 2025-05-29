@@ -18,15 +18,17 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
   const startRecording = async () => {
     try {
-      // Enhanced audio constraints for better quality
+      // High-quality audio constraints for all devices
       const constraints = {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
           channelCount: 1,
-          sampleRate: 44100,
-          sampleSize: 16
+          sampleRate: 48000, // Higher sample rate for better quality
+          sampleSize: 16,
+          latency: 0.1, // Lower latency
+          volume: 1.0   // Ensure full volume capture
         }
       };
 
@@ -62,11 +64,11 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
         }
       }
 
-      console.log('Using audio format:', mimeType); // Debug log
+      console.log('Using high-quality audio format:', mimeType); // Debug log
       
       const options = {
         mimeType,
-        audioBitsPerSecond: 128000
+        audioBitsPerSecond: 192000 // Higher bitrate for better quality on all devices
       };
 
       const mediaRecorder = new MediaRecorder(stream, options);
